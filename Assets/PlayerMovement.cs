@@ -35,7 +35,7 @@ public class PlayerMovement : MonoBehaviour {
 
     //Jumping
     private bool readyToJump = true;
-    private float jumpCooldown = 0.25f;
+    private float jumpCooldown = 0.001f;
     public float jumpForce = 550f;
     
     //Input
@@ -62,6 +62,10 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     private void Update() {
+        if (!grounded && rb.velocity.y < 0.5f)
+        {
+            rb.AddForce(Vector2.up * -0.9f);
+        }
         Movement();
         MyInput();
         Look();
@@ -171,7 +175,7 @@ public class PlayerMovement : MonoBehaviour {
             //If jumping while falling, reset y velocity.
             Vector3 vel = rb.velocity;
             if (rb.velocity.y < 0.5f)
-                rb.velocity = new Vector3(vel.x, 0, vel.z);
+                rb.velocity = new Vector3(vel.x, -20, vel.z);
             else if (rb.velocity.y > 0) 
                 rb.velocity = new Vector3(vel.x, vel.y / 2, vel.z);
             
