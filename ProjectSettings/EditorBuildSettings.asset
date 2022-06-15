@@ -4,5 +4,17 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Pure Poly/Free Low Poly Nature Pack/Scenes/Demo_List.unity
+    guid: c5fac116710c5e743a2245d7f2e9ceea
+  - enabled: 1
+    path: Assets/Scenes/First_scene_yy.unity
+    guid: 6ee4f9a8e62425b468eec02925a3844b
+  - enabled: 1
+    path: Assets/Scenes/Loser.unity
+    guid: 272944c5f9637de47956fb63ae8ca6f2
+  - enabled: 1
+    path: Assets/Scenes/Winner.unity
+    guid: b0b50fb1448bb594e98107c9da71f2e3
   m_configObjects: {}

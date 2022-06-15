@@ -1,10 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using  UnityEngine.Networking;
 using System;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour {
 
+    //player
+    public GameObject playerme;
     //Assingables
     public Transform playerCam;
     public Transform orientation;
@@ -14,13 +18,15 @@ public class PlayerMovement : MonoBehaviour {
 
     //Rotation and look
     private float xRotation;
-    private float sensitivity = 50f;
+    private float sensitivity = 90f;
     private float sensMultiplier = 1f;
     
     //Movement
     public float moveSpeed = 4500;
     public float maxSpeed = 20;
     public bool grounded;
+    public bool losing = false;
+    public bool winning = false;
     public LayerMask whatIsGround;
     
     public float counterMovement = 0.175f;
@@ -47,7 +53,8 @@ public class PlayerMovement : MonoBehaviour {
     private Vector3 wallNormalVector;
 
     void Awake() {
-        rb = GetComponent<Rigidbody>();
+        if (GetComponent<Rigidbody>() != null)
+            rb = GetComponent<Rigidbody>();
     }
     
     void Start() {
@@ -55,21 +62,50 @@ public class PlayerMovement : MonoBehaviour {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-
+    IEnumerator Order()
+    {
+        SceneManager.LoadScene("Winner", LoadSceneMode.Additive);
+    yield return new WaitForSeconds (5.0f);
+    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
     
     private void FixedUpdate() {
         Movement();
     }
 
     private void Update() {
-        if (!grounded && rb.velocity.y < 0.5f)
+        if (!grounded && rb.velocity.y < -0.1f)
         {
-            rb.AddForce(Vector2.up * -0.9f);
+            rb.AddForce(Vector2.up * -1.2f);
+        }
+        if (losing)
+        {
+            //load another scene
+            //StartCoroutine("Teleport");
+            //playerme.transform.position = new Vector3(0.0213f, 2.2409f, 16.3f);
+            //SceneManager.UnloadSceneAsync("First_scene_yy");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        if (winning)
+        {   
+            winning = false;
+            StartCoroutine("Order");
         }
         Movement();
         MyInput();
         Look();
     }
+
+    // IEnumerator Teleport();
+    // {
+
+    //     yeild return new WaitForSeconds(0.5f);
+    //     playerme.transform.position = new Vector3(10f, 5f, 10f);
+    //      yeild return new WaitForSeconds(0.5f);
+
+    // }
+
+
 
     /// <summary>
     /// Find user input.
@@ -79,7 +115,10 @@ public class PlayerMovement : MonoBehaviour {
         y = Input.GetAxisRaw("Vertical");
         jumping = Input.GetButton("Jump");
         crouching = Input.GetKey(KeyCode.LeftControl);
-      
+        if(Input.GetKeyDown("escape")){
+            Application.Quit();
+ 
+        }
         //Crouching
         if (Input.GetKeyDown(KeyCode.LeftControl))
             StartCrouch();
@@ -249,13 +288,25 @@ public class PlayerMovement : MonoBehaviour {
         return new Vector2(xMag, yMag);
     }
 
-    private bool IsFloor(Vector3 v) {
+    public bool IsFloor(Vector3 v) {
         float angle = Vector3.Angle(Vector3.up, v);
         return angle < maxSlopeAngle;
     }
 
     private bool cancellingGrounded;
     
+
+     void OnCollisionEnter(Collision collision)
+     {
+         if (collision.gameObject.layer == 8){
+             winning = true;
+         }
+         if (collision.gameObject.layer == 7){
+             losing = true;
+         }
+     }
+
+
     /// <summary>
     /// Handle ground detection
     /// </summary>
@@ -263,7 +314,14 @@ public class PlayerMovement : MonoBehaviour {
         //Make sure we are only checking for walkable layers
         int layer = other.gameObject.layer;
         if (whatIsGround != (whatIsGround | (1 << layer))) return;
-
+        if (layer == LayerMask.NameToLayer("Loser"))
+        {
+            losing = true;
+        }
+        if (layer == LayerMask.NameToLayer("Winner"))
+        {
+            winning = true;
+        }
         //Iterate through every collision in a physics update
         for (int i = 0; i < other.contactCount; i++) {
             Vector3 normal = other.contacts[i].normal;

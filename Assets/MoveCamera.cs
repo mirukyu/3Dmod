@@ -9,8 +9,11 @@ public class MoveCamera : MonoBehaviour {
 
     void Update() {
         transform.position = player.transform.position;
-        float mouseX = (Input.mousePosition.x / Screen.width ) - 0.5f;
-     float mouseY = (Input.mousePosition.y / Screen.height) - 0.5f;
-     transform.localRotation = Quaternion.Euler (new Vector4 (-1f * (mouseY * 180f), mouseX * 360f, transform.localRotation.z));
+             Cursor.lockState = CursorLockMode.Confined; // keep confined in the game window
+     Cursor.lockState = CursorLockMode.Locked;   // keep confined to center of screen
+     Cursor.lockState = CursorLockMode.None;     // set to default default
+    //     float mouseX = (Input.mousePosition.x / Screen.width ) - 0.5f;
+    //  float mouseY = (Input.mousePosition.y / Screen.height) - 0.5f;
+    //  transform.localRotation = Quaternion.Euler (new Vector4 (-1f * (mouseY * 180f), mouseX * 360f, transform.localRotation.z));
     }
 }
