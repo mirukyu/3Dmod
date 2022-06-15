@@ -40,7 +40,7 @@ public class PlayerMovement : MonoBehaviour {
     public float slideCounterMovement = 0.2f;
 
     //Jumping
-    private bool readyToJump = true;
+    private bool readyToJump;
     private float jumpCooldown = 0.001f;
     public float jumpForce = 550f;
     
@@ -74,10 +74,7 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     private void Update() {
-        if (!grounded && rb.velocity.y < -0.1f)
-        {
-            rb.AddForce(Vector2.up * -1.2f);
-        }
+
         if (losing)
         {
             //load another scene
@@ -159,7 +156,7 @@ public class PlayerMovement : MonoBehaviour {
             GetComponent<Rigidbody>().velocity = new Vector3(0,0,-5);
         }
         //Extra gravity
-        rb.AddForce(Vector3.down * Time.deltaTime * 10);
+        rb.AddForce(Vector3.down * Time.deltaTime * 12);
         
         //Find actual velocity relative to where player is looking
         Vector2 mag = FindVelRelativeToLook();
@@ -169,7 +166,7 @@ public class PlayerMovement : MonoBehaviour {
         CounterMovement(x, y, mag);
         
         //If holding jump && ready to jump, then jump
-        if (readyToJump && jumping) Jump();
+        if (grounded && jumping) Jump();
 
         //Set max speed
         float maxSpeed = this.maxSpeed;
@@ -204,11 +201,11 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     private void Jump() {
-        if (grounded && readyToJump) {
+
             readyToJump = false;
 
             //Add jump forces
-            rb.AddForce(Vector2.up * jumpForce * 1.5f);
+            rb.AddForce(Vector2.up * jumpForce * 2.5f);
             rb.AddForce(normalVector * jumpForce * 0.5f);
             
             //If jumping while falling, reset y velocity.
@@ -219,7 +216,7 @@ public class PlayerMovement : MonoBehaviour {
                 rb.velocity = new Vector3(vel.x, vel.y / 2, vel.z);
             
             Invoke(nameof(ResetJump), jumpCooldown);
-        }
+
     }
     
     private void ResetJump() {
